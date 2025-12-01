@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@1200&display=swap" rel="stylesheet">
 
-<header style="display:flex; align-items:center; padding:10px; border-bottom:2px solid #000;">
-  <img src="oregon.png" alt="Logo CBT" style="height:100px; margin-right:5px;">
+<header style="display:flex; flex-direction:column; align-items:center; padding:5px 10px;">
+  <img src="oregon.png" alt="Logo CBT" style="height:100px; margin-bottom:5px;">
   <h1 class="header-title">
     <span class="oregon-text">Oregon</span>
     <span class="academy-text">Academy</span>
@@ -13,18 +13,20 @@
 
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Full Web CBT — TOEFL Pre-Test</title>
+<title>Web CBT — TOEFL Pre-Test</title>
 <style>
 
 /* Font dan styling dasar */
 .header-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: 38px;
+  font-size: 32px; /* lebih kecil supaya tidak terlalu tinggi */
   font-weight: 800;
   position: relative;
   display: inline-block;
   overflow: hidden;
-  color: transparent; /* teks akan pakai background-clip */
+  color: transparent;
+  text-align: center;
+  line-height: 1; /* rapatkan teks */
 }
 
 /* Gradient per kata */
@@ -38,10 +40,10 @@
   background: linear-gradient(135deg, #007bff, #00c0ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-left: 5px;
+  margin-left: 3  px;
 }
 
-/* Shining effect satu garis untuk keseluruhan h1 */
+/* Shining effect satu garis */
 .header-title::after {
   content: '';
   position: absolute;

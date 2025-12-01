@@ -1,10 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
+
+<header style="display:flex; align-items:center; padding:10px; border-bottom:2px solid #000;">
+  <img src="oregon.png" alt="Logo CBT" style="height:100px; margin-right:5px;">
+  <h1 class="header-title">
+    <span class="oregon-text">Oregon</span>
+    <span class="academy-text">Academy</span>
+  </h1>
+</header>
+
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Full Web CBT — TOEFL Pre-Test</title>
 <style>
+
+/* Font dan styling dasar */
+.header-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  color: transparent; /* teks akan pakai background-clip */
+}
+
+/* Gradient per kata */
+.oregon-text {
+  background: linear-gradient(135deg, #ff7f00, #ffa500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.academy-text {
+  background: linear-gradient(135deg, #007bff, #00c0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-left: 5px;
+}
+
+/* Shining effect satu garis untuk keseluruhan h1 */
+.header-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.5), rgba(255,255,255,0.1), rgba(255,255,255,0.5));
+  transform: skewX(-25deg);
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { left: -50%; }
+  100% { left: 150%; }
+}
+
 :root{
   --ets-blue:#1f4ed8;
   --muted:#6b7280;
@@ -49,6 +103,28 @@ textarea{width:100%;min-height:120px;border:1px solid #e6eefc;padding:8px;border
 .footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
 .small-note{color:var(--muted);font-size:13px}
 .passages p{white-space:pre-wrap}
+
+  .tabs {
+    display: flex;
+    gap: 5px; /* jarak antar tab */
+  }
+
+  .tab {
+    padding: 10px 15px;
+    border: 2px solid black; /* border hitam */
+    border-radius: 5px; /* opsional, biar agak bulat */
+    cursor: pointer; /* pointer saat hover */
+    background-color: #f5f5f5; /* opsional, biar beda sama background */
+    transition: background-color 0.2s;
+  }
+
+  .tab:hover {
+    background-color: #e0e0e0; /* efek hover */
+  }
+
+  .tab.active {
+    background-color: #d0d0d0; /* warna saat aktif */
+  }
 </style>
 </head>
 <body>
@@ -76,7 +152,12 @@ textarea{width:100%;min-height:120px;border:1px solid #e6eefc;padding:8px;border
       <main>
         <!-- SECTION 1 -->
         <div id="sec-1" class="section-box" style="display:block">
-          <div class="directions"><strong>Directions (Listening):</strong> Listen to the audio and answer the questions. You can play/pause. When ready press 'Submit' to grade this section.</div>
+          <div class="directions"><strong>Directions (Listening):</strong> In Part A, you will hear short conversations between two people. After each conversation,
+you will hear a question about the conversation. The conversations and questions will
+not be repeated. After you hear a question, read the four possible answers in your test
+book and choose the best answer. Then, on your answer sheet, find the number of the
+question and fill in the space that corresponds to the letter of the answer you have
+chosen.</div>
           <div class="audiobar" style="margin-top:8px">
             <audio id="audio1" src="section1.mp3" preload="auto"></audio>
             <button class="btn" onclick="playAudio(1)">Play</button>
@@ -98,7 +179,11 @@ textarea{width:100%;min-height:120px;border:1px solid #e6eefc;padding:8px;border
 
         <!-- SECTION 2 (Structure) -->
         <div id="sec-2" class="section-box" style="display:none">
-          <div class="directions"><strong>Directions (Structure):</strong> Questions 1—15 are incomplete sentences. Choose the one word or phrase that best completes the sentence.</div>
+          <div class="directions"><strong>Directions (Structure):</strong> Questions 1—15 are incomplete sentences. Beneath each sentence you will see four
+words or phrases, marked (A), (B), (C), and (D). Choose the one word or phrase that best
+completes the sentence. Then, on your answer sheet, find the number of the question
+and fill in the space that corresponds to the letter of the answer you have chosen. Fill in
+the space so that the letter inside the oval cannot be seen.</div>
           <div id="questions2" class="q-list" style="margin-top:12px"></div>
 
           <div class="footer">
@@ -115,7 +200,11 @@ textarea{width:100%;min-height:120px;border:1px solid #e6eefc;padding:8px;border
 <div id="sec-2b" class="section-box" style="display:none">
   <div class="directions">
     <strong>Directions (Written Expression):</strong>
-    Each question contains an underlined portion of a sentence. Choose the letter (A), (B), (C), or (D) that indicates the portion with the error.
+   In questions 16—40 each sentence has four underlined words or phrases. The four
+underlined parts of the sentence are marked (A), (B), (C), and (D). Identify the one
+underlined word or phrase that must be changed in order for the sentence to be correct.
+Then, on your answer sheet, find the number of the question and fill in the space that
+corresponds to the letter of the answer you have chosen.
   </div>
 
   <!-- ADMIN PANEL REMOVED -->
@@ -139,7 +228,11 @@ textarea{width:100%;min-height:120px;border:1px solid #e6eefc;padding:8px;border
 
         <!-- SECTION 3 (Reading) -->
         <div id="sec-3" class="section-box" style="display:none">
-          <div class="directions"><strong>Directions (Reading):</strong> Read passages and answer the questions. For each passage choose the one best answer (A–D).</div>
+          <div class="directions"><strong>Directions (Reading):</strong> In this section you will read several passages. Each one is followed
+by several questions about it. For this section, you are to choose the
+one best answer, (A), (B), (C), or (D), to each question. Then, on your
+answer sheet, find the number of the question and fill in the space that
+corresponds to the Letter of the answer you have chosen.</div>
 
           <div id="questions3" class="q-list passages" style="margin-top:12px"></div>
 
@@ -178,21 +271,6 @@ textarea{width:100%;min-height:120px;border:1px solid #e6eefc;padding:8px;border
             <div>Written Expr: <span id="p2b">—</span></div>
             <div>Reading: <span id="p3">—</span></div>
           </div>
-
-          <h4 style="margin-top:12px">Settings</h4>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <label><input type="checkbox" id="lockListening"> Lock navigation in Listening (no back)</label>
-            <label>Section 1 time (minutes): <input id="t1" type="number" value="20" style="width:80px"/></label>
-            <label>Section 2 time (minutes): <input id="t2" type="number" value="20" style="width:80px"/></label>
-            <label>Section 3 time (minutes): <input id="t3" type="number" value="45" style="width:80px"/></label>
-            <button class="btn secondary" onclick="applyTimes()">Apply times</button>
-          </div>
-        </div>
-      </aside>
-    </div>
-
-    <h4 style="margin-top:20px">Navigation</h4>
-<div id="nav-container" style="display:flex;flex-wrap:wrap;gap:6px"></div>
 
 
 <script>
@@ -716,4 +794,3 @@ switchSection(1);
 </script>
 </body>
 </html>
-

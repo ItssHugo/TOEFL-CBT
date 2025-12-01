@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Full Web CBT — TOEFL Pre-Test</title>
+<style>
+:root{
+  --ets-blue:#1f4ed8;
+  --muted:#6b7280;
+  --card:#ffffff;
+  --bg:#f7f9fc;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:#0f172a}
+.container{max-width:1100px;margin:28px auto;padding:18px}
+.card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 24px rgba(15,23,42,0.06)}
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.h-title{font-size:18px;font-weight:700}
+.topbar small{color:var(--muted)}
+.layout{display:grid;grid-template-columns:1fr 320px;gap:16px}
+@media(max-width:980px){.layout{grid-template-columns:1fr}}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:8px 12px;border-radius:8px;border:1px solid transparent;background:#fff;cursor:pointer}
+.tab.active{background:linear-gradient(90deg,#eef3ff,#f8fbff);border-color:var(--ets-blue);font-weight:700}
+.section-box{padding:12px;border-radius:10px;background:#fff;border:1px solid #eef2ff;min-height:420px}
+.audiobar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.btn{padding:8px 12px;border-radius:8px;border:none;background:var(--ets-blue);color:white;cursor:pointer;font-weight:600}
+.btn.secondary{background:#eef5ff;color:var(--ets-blue)}
+.small{padding:6px 8px;border-radius:6px;border:1px solid #eef2ff;background:#fff;cursor:pointer}
+.q-list{max-height:60vh;overflow:auto;padding-right:8px}
+.question{border:1px solid #e6e9ef;padding:12px;border-radius:8px;margin-bottom:10px;background:#fff}
+.q-title{font-weight:700;margin-bottom:8px}
+.options label{display:block;padding:8px;border-radius:6px;margin:6px 0;cursor:pointer;border:1px solid transparent}
+.options input{margin-right:10px}
+.options label:hover{background:#fbfdff;border-color:#eef2ff}
+.side-panel{position:relative}
+.panel{background:#fff;padding:12px;border-radius:8px;border:1px solid #eef2f6}
+.panel h4{margin:0 0 10px 0}
+.nav-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.nav-grid button{min-width:36px;height:36px;border-radius:6px;border:1px solid #eef2ff;background:#fff;cursor:pointer}
+.score{font-size:20px;font-weight:800;color:var(--ets-blue)}
+.results{margin-top:12px;padding:12px;border-radius:8px;background:linear-gradient(90deg,#ecfdf5,#f0f9ff);border:1px solid #d1fae5}
+.review-item{padding:10px;border-radius:8px;margin-bottom:8px;border:1px dashed #e6eefc;background:#fcfeff}
+.admin{margin-top:10px}
+textarea{width:100%;min-height:120px;border:1px solid #e6eefc;padding:8px;border-radius:8px}
+.controls-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+.timer{font-weight:700;color:#0f172a}
+.footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+.small-note{color:var(--muted);font-size:13px}
+.passages p{white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <div>
+        <div class="h-title">Full Web CBT — TOEFL Pre-Test</div>
+        <div class="topbar"><small>Sections: 1 Listening — 2 Structure & Written Expression — 3 Reading</small></div>
+      </div>
+      <div>
+        <button class="btn" onclick="downloadAllResults()">Download all results</button>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-section="1" onclick="switchSection(1)">Section 1 — Listening</div>
+      <div class="tab" data-section="2" onclick="switchSection(2)">Section 2 — Structure</div>
+      <div class="tab" data-section="2b" onclick="switchSection('2b')">Section 2 — Written Expression</div>
+      <div class="tab" data-section="3" onclick="switchSection(3)">Section 3 — Reading</div>
+      <div class="tab" data-section="summary" onclick="switchSection('summary')">Summary</div>
+    </div>
+
+    <div class="layout">
+      <main>
+        <!-- SECTION 1 -->
+        <div id="sec-1" class="section-box" style="display:block">
+          <div class="directions"><strong>Directions (Listening):</strong> Listen to the audio and answer the questions. You can play/pause. When ready press 'Submit' to grade this section.</div>
+          <div class="audiobar" style="margin-top:8px">
+            <audio id="audio1" src="section1.mp3" preload="auto"></audio>
+            <button class="btn" onclick="playAudio(1)">Play</button>
+            <button class="btn secondary" onclick="pauseAudio(1)">Pause</button>
+            <div style="margin-left:auto" class="small-note">Timer: <span id="timer1" class="timer">00:00</span></div>
+          </div>
+
+          <div id="questions1" class="q-list"></div>
+
+          <div class="footer">
+            <div>
+              <button class="btn" onclick="submitSection(1)">Submit Section 1</button>
+              <button class="btn secondary" onclick="clearSectionAnswers(1)">Clear</button>
+            </div>
+            <div><small id="count1" class="small-note">Answered: 0 / 30</small></div>
+          </div>
+          <div id="result1"></div>
+        </div>
+
+        <!-- SECTION 2 (Structure) -->
+        <div id="sec-2" class="section-box" style="display:none">
+          <div class="directions"><strong>Directions (Structure):</strong> Questions 1—15 are incomplete sentences. Choose the one word or phrase that best completes the sentence.</div>
+          <div id="questions2" class="q-list" style="margin-top:12px"></div>
+
+          <div class="footer">
+            <div>
+              <button class="btn" onclick="submitSection(2)">Submit Section 2</button>
+              <button class="btn secondary" onclick="clearSectionAnswers(2)">Clear</button>
+            </div>
+            <div><small id="count2" class="small-note">Answered: 0 / 15</small></div>
+          </div>
+          <div id="result2"></div>
+        </div>
+
+        <!-- SECTION 2b (Written Expression) -->
+<div id="sec-2b" class="section-box" style="display:none">
+  <div class="directions">
+    <strong>Directions (Written Expression):</strong>
+    Each question contains an underlined portion of a sentence. Choose the letter (A), (B), (C), or (D) that indicates the portion with the error.
+  </div>
+
+  <!-- ADMIN PANEL REMOVED -->
+  <!-- Now questions will just load normally from JS -->
+
+  <div id="questions2b" class="q-list"></div>
+
+  <div class="footer">
+    <div>
+      <button class="btn" onclick="submitSection('2b')">Submit Written Expression</button>
+      <button class="btn secondary" onclick="clearSectionAnswers('2b')">Clear</button>
+    </div>
+    <div>
+      <small id="count2b" class="small-note">Answered: 0 / 15</small>
+    </div>
+  </div>
+
+  <div id="result2b"></div>
+</div>
+
+
+        <!-- SECTION 3 (Reading) -->
+        <div id="sec-3" class="section-box" style="display:none">
+          <div class="directions"><strong>Directions (Reading):</strong> Read passages and answer the questions. For each passage choose the one best answer (A–D).</div>
+
+          <div id="questions3" class="q-list passages" style="margin-top:12px"></div>
+
+          <div class="footer">
+            <div>
+              <button class="btn" onclick="submitSection(3)">Submit Reading</button>
+              <button class="btn secondary" onclick="clearSectionAnswers(3)">Clear</button>
+            </div>
+            <div><small id="count3" class="small-note">Answered: 0 / 0</small></div>
+          </div>
+          <div id="result3"></div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div id="sec-summary" class="section-box" style="display:none">
+          <h3>Overall Summary</h3>
+          <div id="overallSummary">No submissions yet. Submit sections to see summary.</div>
+        </div>
+      </main>
+
+      <aside class="side-panel">
+        <div class="panel">
+          <h4>Navigation</h4>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <button class="small" onclick="switchSection(1)">S1</button>
+            <button class="small" onclick="switchSection(2)">S2</button>
+            <button class="small" onclick="switchSection('2b')">S2b</button>
+            <button class="small" onclick="switchSection(3)">S3</button>
+            <button class="small" onclick="switchSection('summary')">Summary</button>
+          </div>
+
+          <h4 style="margin-top:10px">Progress</h4>
+          <div id="progressPanel">
+            <div>Section 1: <span id="p1">—</span></div>
+            <div>Section 2: <span id="p2">—</span></div>
+            <div>Written Expr: <span id="p2b">—</span></div>
+            <div>Reading: <span id="p3">—</span></div>
+          </div>
+
+          <h4 style="margin-top:12px">Settings</h4>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label><input type="checkbox" id="lockListening"> Lock navigation in Listening (no back)</label>
+            <label>Section 1 time (minutes): <input id="t1" type="number" value="20" style="width:80px"/></label>
+            <label>Section 2 time (minutes): <input id="t2" type="number" value="20" style="width:80px"/></label>
+            <label>Section 3 time (minutes): <input id="t3" type="number" value="45" style="width:80px"/></label>
+            <button class="btn secondary" onclick="applyTimes()">Apply times</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <h4 style="margin-top:20px">Navigation</h4>
+<div id="nav-container" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+
+
+<script>
+/* ---------------------------
+  SECTION 1: Listening (30) - already provided earlier
+--------------------------- */
+const section1 = [
+  { q: "Question 1", choices:{A:"She’s not sure who replied her email last week.",B:"She doesn’t know who will reply her email.",C:"They will not get their money back.",D:"She’s not sure when they will get their money back."} },
+  { q: "Question 2", choices:{A:"They wish they hadn’t looked over the weather forecast.",B:"They asked for some information about the weather.",C:"They regretted planning an outdoor party.",D:"They needed help in planning the party."} },
+  { q: "Question 3", choices:{A:"It has a new style.",B:"Someone colored it.",C:"She’s just dyed it.",D:"It’s just been cut."} },
+  { q: "Question 4", choices:{A:"No one can find him.",B:"He’s going nowhere.",C:"Everyone’s been asking him questions.",D:"He’s going downstairs."} },
+  { q: "Question 5", choices:{A:"He doesn’t know about the audition result",B:"He has to go back for another audition",C:"He has posted the result on the bulletin board",D:"He wasn’t given any clue during the audition"} },
+  { q: "Question 6", choices:{A:"She doesn’t believe what her friend told her",B:"She disagrees with her friend’s idea",C:"She thinks the contestants were unprepared, too",D:"She isn’t ready for the competition"} },
+  { q: "Question 7", choices:{A:"She doesn’t know where the walking stick is",B:"She’s asking if he has packed a walking stick or not",C:"The terrain isn’t too rough",D:"The man ought to bring a walking stick"} },
+  { q: "Question 8", choices:{A:"Discussing the problem with his girlfriend",B:"Looking for a new girlfriend",C:"Spending more time with his friends",D:"Not talking to his girlfriend anymore"} },
+  { q: "Question 9", choices:{A:"He cut himself on an accident while he was teaching",B:"He’s planning to open up his own school",C:"He doesn’t want to work in schools anymore",D:"He’s not going to enroll in any school this year"} },
+  { q: "Question 10", choices:{A:"He and Meghan had an accident",B:"He met Meghan unexpectedly on his way to work",C:"He accidentally collided with Meghan while rushing to work",D:"He dumped Meghan this morning in the office"} },
+  { q: "Question 11", choices:{A:"She’s sorry that Andrew can’t go to the concert",B:"She feels bad that Andrew still has to pay for the tickets",C:"She only cares about Andrew paying her back",D:"She insists that Andrew come to the concert"} },
+  { q: "Question 12", choices:{A:"The systems isn’t convenient for users",B:"He’s not familiar with the systems",C:"He likes the earlier version better",D:"Using the systems is simple"} },
+  { q: "Question 13", choices:{A:"He couldn’t let his friend into the dorm",B:"He wasn’t suspended even though he let his friend into the dorm",C:"He can’t be suspended if he let his friend into the dorm",D:"He was suspended for letting his friend into the dorm"} },
+  { q: "Question 14", choices:{A:"He’s afraid he’ll be late to arrive",B:"He’s not ready for the last stop",C:"He had to wait a long time to arrive",D:"He got on the wrong train"} },
+  { q: "Question 15", choices:{A:"Some people are unable to attend the regular meeting",B:"No one attends the meeting every day",C:"Everyone does not come to every meeting",D:"Someone never come to any meeting"} },
+  { q: "Question 16", choices:{A:"He doesn’t like that the club meets so often",B:"He is not sure when the club meets",C:"He hopes the meeting times can be changed",D:"He isn’t likely to attend all the meetings"} },
+  { q: "Question 17", choices:{A:"She likes the design Rosita creates",B:"She’s not sure who else likes the design",C:"She recommends Rosita as his designer",D:"She doesn’t think the design is attractive."} },
+  { q: "Question 18", choices:{A:"She saved $20",B:"She bought 3 cans for $20",C:"She bought 3 cans to get discount",D:"She spent $40"} },
+  { q: "Question 19", choices:{A:"Furniture store",B:"Hotel",C:"School",D:"Bank"} },
+  { q: "Question 20", choices:{A:"It must be looking good with the added space",B:"It must be needing more money",C:"It must be gaining a lot of profit",D:"It will be adding even more space"} },
+  { q: "Question 21", choices:{A:"Purchase a new laptop and monitor",B:"Place a new laptop and monitor on the borders",C:"Withdraw a maximum of $1,500 cash",D:"Make sure the new laptop and monitor don’t fall"} },
+  { q: "Question 22", choices:{A:"He knows the woman’s problem",B:"He wants his Walkman back",C:"He refuse to lend his Walkman",D:"The woman can keep the Walkman"} },
+  { q: "Question 23", choices:{A:"He originally supported Jeff Atkins",B:"He can no longer support Zach Dempsey",C:"Zach Dempsey is no longer running for the vote",D:"Jeff Atkins was never nominated"} },
+  { q: "Question 24", choices:{A:"Get his own cassette player",B:"Stay home and complete his assignment",C:"Save some money",D:"Borrow his father’s cassette player"} },
+  { q: "Question 25", choices:{A:"She has no problem partnering with the man",B:"She hasn’t seen the man in a long time",C:"She doesn’t want to be partners with the man",D:"She needs to know why they should be partners"} },
+  { q: "Question 26", choices:{A:"She is also meeting Mr. Porter for the same issue",B:"She is afraid that Mr. Porter doesn’t want to help",C:"She recommends seeing Mr. Porter for his problem",D:"She doesn’t think Mr. Porter can offer any support"} },
+  { q: "Question 27", choices:{A:"He has been working on a lot of homework lately",B:"He won’t leave until his work is done",C:"He won’t go because he has homework to do",D:"He asks the woman to help him with the homework"} },
+  { q: "Question 28", choices:{A:"It’s right after the main door",B:"It’s on the right side of the building",C:"It’s on her right side",D:"It’s outside the building"} },
+  { q: "Question 29", choices:{A:"He’s going for a swim",B:"He’s going home",C:"He’s going to beat someone up",D:"He’s having a pool party"} },
+  { q: "Question 30", choices:{A:"She knew Mr. Baker wouldn’t come to class",B:"She had already passed Mr. Baker’s test",C:"She needed to prepare for the exam",D:"She wasn’t studying for Mr. Baker’s class"} }
+];
+
+const section1Key = ["D","C","B","C","A","C","D","D","C","C","B","D","B","A","A","D","C","C","A","A","C","B","C","D","A","C","C","B","A","C"];
+
+/* ---------------------------
+  SECTION 2: Structure (1-15)
+--------------------------- */
+const section2 = [
+  { text: "The Golgi body and Endoplasmic reticulum (ER) … in the majority of eukaryotic cells.", choices:["both found in organelles","both are organelles found","which are found","find"] },
+  { text: "…, the co-operative supermarket chain Migros undertook special interest audits of specific issues it felt worthy of investigation and called these Social Audits.", choices:["The Switzerland","Switzerland","In Switzerland","Where Switzerland is"] },
+  { text: "These dark works, …, are generally his best-known works, although at the time he sold them with difficulty.", choices:["that is inspired by Spain","inspired by Spain","inspire Spain","by Spain"] },
+  { text: "Stardust is a scientific term … to dust grains that condensed from cooling gases from individual pre-solar stars and incorporated into the cloud.", choices:["referring","which refer","refers","that referring"] },
+  { text: "Tropical monsoon climates have monthly mean temperatures above 18°C in every month of the year and … wet and dry seasons.", choices:["features","which feature","featuring","feature"] },
+  { text: "Other minerals may be found in metamorphic rocks, but … necessarily the result of the process of metamorphism.", choices:["which rather not","it is not","they are not","also"] },
+  { text: "The brand Deer Park Spring Water has been noted to make the water bottle flipping easier … its unique hourglass shape with a third divot.", choices:["causing","because","due","because of"] },
+  { text: "Individuals with a “growth mindset” believe that they can acquire any given ability … invest effort or study.", choices:["provided that they","to provide them","that provides","which they"] },
+  { text: "Foliation … a rock is being shortened along one axis during recrystallization.", choices:["occurs to be","which is when","occurs when","and"] },
+  { text: "The indirect methods … the radiative properties can detect cosmic dust.", choices:["which utilizes","that utilize","in which","utilize"] },
+  { text: "Hardly ever … to organize their thoughts and the images they present.", choices:["that Surrealist writers do appear","Surrealist writers do appear","do Surrealist writers appear","do appear Surrealist writers"] },
+  { text: "Rifaximin was significantly more effective than … placebo in reducing the duration of diarrhea.", choices:["it","was","it was","was it"] },
+  { text: "So high … can take only a couple of steps per minute as they near the summit due to the scarce oxygen.", choices:["is Mount Everest that climbers","that is Mount Everest climbers","is Mount Everest climbers that","is that Mount Everest climbers"] },
+  { text: "…, the Archie search engine was created for the first time as an index for FTP sites.", choices:["The start of Digital Marketing was when","When was the start of Digital Marketing","The start was when Digital Marketing of","When was Digital Marketing started"] },
+  { text: "When …, the use of negative space in art may be analogous to silence in music.", choices:["the juxtaposed musical ideas","the adjacent musical ideas","juxtaposed with adjacent musical ideas","are the musical ideas juxtaposed"] }
+];
+
+const section2Key = ["B","C","B","A","D","C","D","A","C","B","C","B","A","A","C"];
+
+let section2b = [
+  {
+    text: "The futurist architecture created since 1960 may be termed Neo Futurism, and were also referred as Post Modern Futurism or Neo-Futuristic architecture.",
+    parts:{A:"created",B:"may be",C:"were",D:"referred as"},
+    answer:"C"
+  },
+  {
+    text: "Individual with a weak sense of self-efficacy evade challenges and quickly feels discouraged by setbacks.",
+    parts:{A:"Individual",B:"evade",C:"feels",D:"discouraged"},
+    answer:"B"
+  },
+  {
+    text: "Aware of the youth’s rare gifts, but disinclined to waste his time with one so inexperienced, Francois Boucher sending the young Fragonard to Chardin’s atelier.",
+    parts:{A:"of",B:"disinclined",C:"inexperienced",D:"sending"},
+    answer:"D"
+  },
+  {
+    text: "The mechanism responsible for driving osmosis has been represented in chemistry texts as either the dilution of water by solute nor by the solute’s attraction to water.",
+    parts:{A:"driving",B:"represented",C:"nor",D:"attraction"},
+    answer:"C"
+  },
+  {
+    text: "Compared to Sens Cathedral, Basilica of St. Denis is the most complex. There is an obvious difference in the enclosing ambulatory around the choir.",
+    parts:{A:"Compared to",B:"the most",C:"difference",D:"enclosing"},
+    answer:"B"
+  },
+  {
+    text: "Studies have showed that by combining live music with the Kangaroo Care, maternal anxiety is reduced.",
+    parts:{A:"showed",B:"combining",C:"maternal",D:"reduced"},
+    answer:"A"
+  },
+  {
+    text: "In Kangaroo Care, the parent may wearing a shirt or hospital gown with an opening to the front and a blanket over the wrap for the baby when it is cold.",
+    parts:{A:"wearing",B:"gown",C:"opening",D:"over"},
+    answer:"A"
+  },
+  {
+    text: "Leonardo da Vinci (1452–1519) has made hundreds of pages of sketchbooks during his life, filled with drawings and writings that went along with his very curious mind.",
+    parts:{A:"has",B:"made",C:"filled",D:"along"},
+    answer:"A"
+  },
+  {
+    text: "The modern meaning of doodle emerged in the 1930s from the verb “to dawdle”, which since the seventeenth century had the meaning of wasting time or being lazy.",
+    parts:{A:"emerged",B:"from",C:"had",D:"being"},
+    answer:"C"
+  },
+  {
+    text: "Gesso is also using as a base on three-dimensional surfaces for the application of paint or gold leaf by many artists.",
+    parts:{A:"is",B:"using",C:"base",D:"emotional"},
+    answer:"B"
+  },
+  {
+    text: "Bertrand Russell said that if the USSR had no bomb, the West’s victory would come more swiftly and with less casualties than if there were atom bombs on both sides.",
+    parts:{A:"would",B:"swiftly",C:"less",D:"were"},
+    answer:"C"
+  },
+  {
+    text: "Therapy interventions usually focus on relationship patterns rather than on analyzing impulses of early child trauma of individual as a Freudian therapist would do.",
+    parts:{A:"interventions",B:"analyzing",C:"child",D:"Freudian"},
+    answer:"C"
+  },
+  {
+    text: "John Dalton is best known for proposing the modern atomic theory and for his research into color blindness, sometimes referred to as Daltonism in their honor.",
+    parts:{A:"known",B:"atomic",C:"blindness",D:"their"},
+    answer:"D"
+  },
+  {
+    text: "Historical documentation suggests Gasparo Berti, an Italian mathematician and astronomer, built unintentionally a water barometer sometime between 1640–1643.",
+    parts:{A:"Historical",B:"mathematician",C:"unintentionally",D:"sometime"},
+    answer:"C"
+  },
+  {
+    text: "There are several chapels of bones where the walls are totally or partially covered by humanly remains, mostly bones.",
+    parts:{A:"partially",B:"humanly",C:"remains",D:"mostly"},
+    answer:"B"
+  }
+];
+
+/* ---------------------------
+  SECTION 3: Reading (filled from the passages you provided)
+  Each passage has: title, passage, questions: [{q, choices:{A,B,C,D}, answer}]
+--------------------------- */
+const section3 = [
+  {
+    title: "Passage 1 — Body clock (Richter study)",
+    passage:
+`Science has moved closer toward identifying the long-sought brain site of the body clock, the timer that governs all the rhythms of life. A Johns Hopkins University scientist has disclosed that a group of rats has been transformed by precision brain surgery from performing night activity to day activity in a complete reversal of their age-old timetable. For thousands of years, the wild Norway rat has spent its day sleeping or hiding in deep burrows and its nights outside searching for food and water, as a means of surviving against predators. Dr. Curt P. Richter, a noted psychobiologist, has developed a surgical means of destroying the animal’s built-in clock in a special portion of the brain so that it spends most of the light hours being active and all of the dark hours sleeping. “We know much more about the location of the clock,” said Richter in an interview.
+
+The site has been elusive in the past. As one scientist said, “It seems to be everywhere and yet nowhere when we try to localize it.”
+
+The study, covering 12 years and several hundred domesticated rats, is published by the National Academy of Sciences. Richter said the findings support the view that body clocks have independent function and do not need to rely on outside timers, such as the sun, gravity or earth magnetism. The body clock, in Richter’s opinion, is like a precision self-winding calendar wristwatch with a built-in timer. An opposing view, held by some scientists, compares it to a household electric clock with no built-in timer but rather a synchronous motor that allows it to count the oscillation coming over the power lines. The opponents cite the total solar eclipse on March 7, 1970, when horses, butterflies and other day animals went to sleep and mice, owls and fireflies woke up.
+
+In Richter’s study, the rhythm of the rats’ activity previously had not been disturbed by the arrival of laboratory workers at day and departure at night, but when deprived of their body clocks, the animals adopted a new timetable that was controlled by the working hours of the laboratory. Like animals, man has evolved a 24-hour clock. Richter believes human beings started out sleeping about 12 hours during light. Introduction of the campfire, he says, enabled man to extend his waking hours so that he now sleeps about a third of the time. This is true everywhere, even above the Arctic Circle, where summer brings constant daylight.
+
+The 24-hour clock remains steadfast despite efforts to change it. Forty years ago, Dr. Nathaniel Kleitman, a University of Chicago physiologist, descended into Mammoth Cave, Ky., to eliminate the influences of the natural dark-light cycle and attempt to reset his body clock to a 28-hour day using artificial lighting. However, his wakefulness rhythm failed to adapt to the new schedule. He had trouble falling asleep after turning out the lights and he awoke too early.
+
+Over the years, scientists have found that no fewer than 40 physiological functions of the body have rhythms that are timed by the biological clock. Temperature, for example, is regulated so that it is at least two degrees higher in the late afternoon than the low point in the early morning hours. Peak efficiency is reached at certain periods of the day. Time zone effects of air travel cause jet lag.
+
+Similarly, there are daily rhythms in blood-pressure levels, blood-sugar level, pulse rate and even stomach contraction. The effectiveness of drugs given to a patient varies depending on what hours of the day or night they are given. It is likely there are best and worst times to perform surgery, take X-rays and diagnose disease, but these have tended to be masked in the process of evolution.
+
+There are other rhythms that are not daily. In women, the 28-day menstrual cycle and the 260-day gestation period of pregnancy are widely recognized examples.`,
+    questions: [
+      { q: "What does the passage mainly discuss?", choices:{A:"the location of the body clock",B:"how to change sleeping habit",C:"experiments in lifestyle changes",D:"organism’s bodily cycle and regularity"}, answer:"D" },
+      { q: "The word “elusive” in line 13 is closest in meaning to ….", choices:{A:"difficult to find",B:"irreplaceable",C:"deceptive",D:"ambiguous"}, answer:"A" },
+      { q: "What makes Dr. Richter think that the body clock is adjustable?", choices:{A:"Dr. Kleitman’s descent into Mammoth Cave",B:"the experiment on wild nocturnal Norway rats",C:"animals’ reversed sleeping cycle at the total solar eclipse in 1970",D:"the sun, gravity, and earth magnetism"}, answer:"B" },
+      { q: "According to the passage, all of the following is true about the body clock, EXCEPT …", choices:{A:"Even though it is adjustable, it is solid 24-hour long.",B:"There are other rhythms that do not occur daily.",C:"Different surroundings may affect the body clock.",D:"It is the culprit behind jetlags."}, answer:"A" },
+      { q: "The word “steadfast” in line 34 is closest in meaning to ….", choices:{A:"loyal",B:"devoted",C:"fixed",D:"determined"}, answer:"C" },
+      { q: "Which of the following can be inferred about human body’s physiological functions?", choices:{A:"It is not possible to alter the human’s physiology with surgery.",B:"“The body rhythm” is a different term from “the body clock”.",C:"All living organisms has the same body rhythm no matter where they live.",D:"The biological clock controls most of the works of our body parts."}, answer:"D" },
+      { q: "The word “they” in line 48 refers to ….", choices:{A:"active hours",B:"drugs",C:"patients",D:"daily rhythms"}, answer:"B" },
+      { q: "According to the passage, which is NOT the benefit of identifying someone’s body rhythm?", choices:{A:"scheduling works to be done within the body’s most efficient times",B:"knowing what time to take medicine to get the best result",C:"preventing jet lags even if traveling through different time zones",D:"anticipating when the next period is coming"}, answer:"C" },
+      { q: "The word “regulated” in line 42 is closest in meaning to ….", choices:{A:"checked",B:"controlled",C:"repeated",D:"monitored"}, answer:"B" },
+      { q: "The author mentions women’s menstrual cycle in the last paragraph in order to …", choices:{A:"prove that both genders experience the effect of biological clock",B:"compare it with the gestation period of pregnancy",C:"explain that it is possible to adjust the body clock",D:"give an example of non-daily body rhythms"}, answer:"D" }
+    ]
+  },
+  {
+    title: "Passage 2 — Gender stereotypes in textbooks",
+    passage:
+`Illustrations and stories in United States primary school textbooks tend to convince young girls that they should be “passive” and “dependent” creatures who need aspire only to lives of service to their future husbands and children, a conference of educators was told here yesterday. Speaking at the first national conference on schools and sex role stereotypes, a University of California professor said a study of the 100 most widely used elementary text-books demonstrated that girls are constantly depicted as dependent on and subservient to boys. Louise White, of the U.S. Office of Education, told the conference that the female stereotype presented to elementary school children was so overwhelming that by the time most girls reached fourth grade they believed they had only four occupations open to them—nurse, secretary, teacher, or mother.
+
+The director of the elementary school textbook study, Lenore Weitzman, of the University of California, said that texts in spelling, reading, mathematics, science, and social studies were examined. Most stories and illustrations tended to center on boys rather than girls, and those boys tended to demonstrate qualities of strength, intelligence, love of adventure, independence, and courage. Girls, however, were depicted in passive roles. Usually they were inside a house, and often they were helping with housework or playing with dolls. When boys and girls appeared together in a text, she said, the girls were either watching the boys do something or they were helping the boys.
+
+Adult men appearing in elementary school texts were depicted in various jobs—astronaut, truck driver, policeman, cowboy, scientist, banker—in addition to the role of father. But the overwhelming picture of women that emerged from the elementary texts was that of mother and housewife. Even at that, said Professor Weitzman, the picture was one of a woman performing simple but time-consuming chores. It failed completely to reflect the complexities facing a modern housewife.
+
+A study was done by an affiliate of the Central New Jersey National Organization for women on 134 books published by 14 major publishing companies and involving 2,760 stories for elementary school children. According to the findings the composite housewife or mother was a limited, colorless, mindless creature. Not only does she wash, cook, clean, nurse, and find mittens, these chores constitute her only happiness.
+
+In illustration, she frequently appears in the servant’s posture, body slightly bent forward, hand clasped, eyes riveted on the master of the house or the children. In contrast, the typical father found in the study was the good guy in the family. He’s where the fun is. He builds things with his children and takes them hunting, fishing and up in planes. He solves the problems.
+
+The effect of this on young girls, Professor Weitzman said, is to make them think their role is to serve others. They think they should be attractive so that they can please others and although they generally have better academic records than boys by the time they reach adolescence, they value academic and scholastic excellence less than boys do.`,
+    questions: [
+      { q: "The word “subservient” in line 7 is closest in meaning to ….", choices:{A:"superior",B:"submissive",C:"subclass",D:"suburbia"}, answer:"B" },
+      { q: "According to the text, which is NOT the result of the mistaken female stereotypes in school textbooks?", choices:{A:"Female students’ grades worsen by the time they are adolescent.",B:"Girls believe that they only have limited career choices in the future.",C:"Young females do not consider being smart as a value they must have.",D:"The image of a housewife is being greatly underestimated."}, answer:"A" },
+      { q: "Which of the following is NOT the depiction of females in textbooks according to the text?", choices:{A:"Being physically attractive is what matters, not having high academic achievement.",B:"Their sole purpose is mainly to serve others.",C:"Housewives are illustrated as having complex responsibilities.",D:"They always have subordinate roles to males, never take initiative, and have less fun."}, answer:"C" },
+      { q: "The word “constitute” in line 33 can best be substituted with ….", choices:{A:"eliminate",B:"destroy",C:"arrange",D:"form"}, answer:"D" },
+      { q: "What can be inferred from paragraph 1?", choices:{A:"U.S. Office of Education appreciates the fact that most girls have had their future careers set.",B:"School textbooks have inspired elementary students to have noble jobs, i.e. nurses.",C:"The stereotypes have made students had an idea that females have limited career choices.",D:"Louis White encourages fourth graders to pursue their dream as nurses, teachers, and secretaries."}, answer:"C" },
+      { q: "In paragraph 4, the author makes a point that …", choices:{A:"Male students appreciate academic achievement more than females do because their grades are higher.",B:"The stereotype has encouraged girls to achieve higher scores than boys.",C:"School textbooks have made girls believed that their value is merely physical.",D:"By the time students are adolescent, their school grades are predominantly declining."}, answer:"C" },
+      { q: "The word “they” in line 10 refers to ….", choices:{A:"female stereotypes",B:"elementary school children",C:"most girls",D:"the conference attendee"}, answer:"C" },
+      { q: "Which of the following does NOT state their objection to the female stereotypes in school textbooks?", choices:{A:"Louise White, of the U.S. Office of Education",B:"the national conference of educators on schools and sex role stereotypes",C:"an affiliate of the Central New Jersey National Organization for Women",D:"the director of the elementary school textbook study"}, answer:"B" },
+      { q: "What is the main point in paragraph 5?", choices:{A:"the frequent appearances of mother in textbooks",B:"the colorless images of mother in children’s books",C:"the biased illustrations of mother and father",D:"the unreal depictions of father in textbooks"}, answer:"C" },
+      { q: "The word “composite” in line 31 could be best replaced by ….", choices:{A:"complex",B:"combination",C:"mixture",D:"diversity"}, answer:"B" }
+    ]
+  },
+  {
+    title: "Passage 3 — Muscular power & fitness",
+    passage:
+`The human body is made up mainly of bone, muscle, and fat. Some 639 different muscles account for about 45 per cent of body weight. Each of these muscles has four distinct and measurable qualities which are of interest to us:
+a. it can produce force which can be measured as strength of muscle;
+b. it can store energy which permit it to work for extended periods of time independent of circulation—this is generally referred to as muscular endurance;
+c. it can shorten at varying rates. This is called speed of contraction;
+d. it can be stretched and will recoil. This is called the elasticity of muscle.
+The combination of these four qualities of muscle is referred to as muscular power.
+
+If muscles are to function efficiently, they must be continually supplied with energy fuel. This is accomplished by the blood which carries the energy fuel from lungs and digestive systems to the muscles. The blood is forced through the blood vessels by the heart. The combined capacity to supply energy fuels to the working muscles is called organic power.
+
+The capacity and efficiency with which your body can function depends on the degree of development of both your muscular and organic power through regular exercise. However, the level of which you can develop these is influenced by such factors as the type of body you have, the food you eat, presence or absence of disease, rest and sleep. You are physically fit only when you have adequately developed your muscular and organic power to perform with the highest possible efficiency.
+
+Heredity and health determine the top limits to which your physical capacity can be developed. This is known as your potential physical capacity. This potential capacity varies from individual to individual. Most of us, for example, could train for a lifetime and never come close to running a four-minute mile simply because we weren’t “built” for it. The top level of which you can perform physically right now is called your “acquired capacity” because it has been acquired or developed through physical activity in your daily routines. Your body, like a car, functions efficiently well below its acquired capacity. A car, for example, driven at its top speed of, say, 110 miles per hour uses more petrol per mile than when it is driven around 50-60 miles per hour, which is well below its capacity. Your body functions in the same way, in that the ratio of work performed to energy expended is better when it functions well below acquired capacity.
+
+You can avoid wastage of energy by acquiring a level of physical capacity well above the level required to perform your normal daily tasks. This can be accomplished by supplementing your daily physical activity with a balanced exercise program performed regularly. Your capacity increases as you progressively increase the load on your muscular and organic systems. Exercise will increase physical endurance and stamina thus providing a greater reserve of energy for leisure-time activities.`,
+    questions: [
+      { q: "What is the main topic of the passage?", choices:{A:"several scientific terms related to muscles",B:"tips on how to be physically fit",C:"physical capacity and efficiency",D:"the variety of muscles"}, answer:"C" },
+      { q: "The author mentions about cars in Paragraph 5 in order to …", choices:{A:"illustrate how human body perform efficiently",B:"remind that we shouldn’t exploit our body to do maximum work",C:"encourage to fuel our body in order to perform effectively",D:"explain that human body does not need to acquire its maximum capacity"}, answer:"A" },
+      { q: "The word “this” in line 13 refers to …", choices:{A:"to operate muscles efficiently",B:"energy fuel",C:"supplying muscles with energy fuel",D:"muscles function"}, answer:"C" },
+      { q: "Which of the following is NOT mentioned as one of muscle qualities?", choices:{A:"It always contracts fast.",B:"It generates force.",C:"It reserves energy.",D:"It flexes as necessary."}, answer:"A" },
+      { q: "The phrase “account for” in line 2 is closest in meaning to ….", choices:{A:"compose",B:"consider as",C:"cause",D:"become"}, answer:"A" },
+      { q: "The following is the advantages of regular exercise mentioned in the text, EXCEPT ….", choices:{A:"developing organic power",B:"adding load on muscular power",C:"increasing muscle endurance",D:"boosting potential physical capacity"}, answer:"B" },
+      { q: "According to the passage, organic power ….", choices:{A:"means the capacity to supply energy to the working muscles",B:"involves blood vessels, heart, lungs and digestive system in the process",C:"affects muscle performance",D:"is all of the above"}, answer:"D" },
+      { q: "Which of the following is true about someone who is physically fit?", choices:{A:"His build is typically rather muscular than skinny.",B:"He seems just like any common individual.",C:"He has reached the maximum efficiency for his muscular and organic power.",D:"His fitness level is equal to anybody use to exercising regularly."}, answer:"B" },
+      { q: "According to paragraph 5, how does human body function?", choices:{A:"A lot of energy is used when performing high intensity work.",B:"It is possible to increase the potential physical capacity with exercise.",C:"It is unlikely that human body can perform at its maximum capacity.",D:"Adding workloads to muscles can lead to wastage of energy."}, answer:"A" },
+      { q: "The word “these” in line 19 refers to ….", choices:{A:"muscular and organic power",B:"regular exercise",C:"body function",D:"capacity and efficiency"}, answer:"D" }
+    ]
+  },
+  {
+    title: "Passage 4 — Hypnosis",
+    passage:
+`There are many methods of producing hypnosis; indeed, almost every experienced hypnotist employs variations differing slightly from those of others. Perhaps the most common method is something along these lines. The hypnotist tries to obtain his subject’s co-operation by pointing out to him the advantages to be secured by the hypnosis, such as, for instance, the help in curing the nervous illness to be derived from the patient’s remembering in the trance certain events which otherwise are inaccessible to his memory. The patient is reassured about any possible dangers he might suspect to be present in hypnosis, and he may also be told (quite truthfully) that it is not a sign of instability or weakness to be capable of being put in a hypnotic trance, but that, quite on the contrary, a certain amount of intelligence and concentration on the part of the subject is absolutely essential.
+
+Next, the subject is asked to lie down on a couch, or sit in an easy chair. External stimulation is reduced to a minimum by drawing the curtains and excluding, as far as possible, all disruptive noises. It is sometimes helpful to concentrate the subject’s attention on some small bright object dangled just above eye-level, thus forcing him to look slightly upwards. This leads quickly to a fatigue of the eye-muscles, and thus facilitates his acceptance of the suggestion that he is feeling tired and that his eyes are closing. The hypnotist now begins to talk to the subject in a soft tone of voice, repeating endless suggestions to the effect that the subject is feeling drowsy, getting tired, that his eyes are closing, that he is falling into a deep sleep, that he cannot hear anything except the hypnotist’s voice, and so on and so forth. In a susceptible subject, a light trance is thus induced after a few minutes, and the hypnotist now begins to deepen this trance and to test the reactions of the subject by giving suggestions which are more and more difficult of execution. Thus, he will ask the subject to clasp his hands together, and tell him that it is impossible for him to separate his hands again. The subject, try as he may, finds, to his astonishment, that he cannot in actual fact pull his hands apart. Successful suggestions of this kind are instrumental in deepening the hypnotic trance until, finally, in particularly good subjects, all the phenomena which will be discussed presently can be elicited.
+
+Having induced a reasonably deep hypnotic trance in our subject, what types of phenomena can be elicited? The first and most obvious one, which, indeed, may be responsible in large measure for all the others, is a tremendous increase in the subject’s suggestibility. He will take up any suggestion the hypnotist puts forward and act on it to the best of his ability. Suggest to him that he is a dog, and he will go down on all fours and rush around the room barking and yelping. This tremendous increase in suggestibility is often exploited on the stage to induce people to do foolish and ridiculous acts. Such practices are not to be encouraged because they go counter to the ideal of human dignity and are not the kind of way in which hypnosis ought to be used; nevertheless, they must be mentioned because it is probably phenomena such as these which are most familiar to people from vaudeville acts, from reading the papers, and so forth.`,
+    questions: [
+      { q: "What is paragraph 2 primarily about?", choices:{A:"the secrets of every hypnotist",B:"phenomena behind hypnosis",C:"process of how hypnosis is done",D:"correct method of using hypnosis"}, answer:"C" },
+      { q: "The word “trance” in line 10 is closest in meaning to …", choices:{A:"unconsciousness",B:"stupor",C:"deep sleep",D:"dreamland"}, answer:"B" },
+      { q: "What is the hypnotists’ intention on having a subject to concentrate on a small dangling object?", choices:{A:"to make his eyes weary",B:"to reduce stimulus from his surrounding",C:"to cause him to sleep",D:"to keep the subject’s attention"}, answer:"D" },
+      { q: "What is in fact happening when a subject does what the hypnotist says?", choices:{A:"He is no longer able to control his mind and body.",B:"He is entering a deep state of hypnosis trance where he barely remembers anything.",C:"He believes in the hypnotist more than before thus carries out the given order.",D:"He is being more inclined in accepting the suggestions of the hypnotist."}, answer:"D" },
+      { q: "How does the author feel about hypnosis being performed as a stage act?", choices:{A:"It is strongly averted to use hypnosis for such practice.",B:"It requires exceptional skill to have power over the subject’s mind.",C:"It is the only form of hypnosis people know.",D:"All of the above."}, answer:"A" },
+      { q: "What benefit of hypnosis is mentioned in the passage?", choices:{A:"as a cure to help with sleep deprivation",B:"unleashing a potential power hidden in sub-consciousness",C:"maintaining a strong memory by helping to remember everything",D:"as a therapy to recollect suppressed memories"}, answer:"D" },
+      { q: "The word “susceptible” in line 23 can best be replaced with …", choices:{A:"acceptable",B:"vulnerable",C:"naive",D:"sensitive"}, answer:"B" },
+      { q: "Which of the following is NOT mentioned as one of the steps to hypnotizing a subject?", choices:{A:"make the subject aware of the risks of being hypnotized",B:"repeat suggestions in soft, low voice",C:"stimulate the subject to enter half-conscious state of mind",D:"massage the subject’s head to help him enter trance"}, answer:"D" },
+      { q: "According to the text, what is the initial stage in hypnosis?", choices:{A:"maintaining a quiet surrounding",B:"having the subject to take a relaxed position",C:"dangling an object to draw the subject’s focus",D:"restoring the subject’s confidence"}, answer:"B" },
+      { q: "The word “puts forward” in line 36 is closest in meaning to ….", choices:{A:"sends",B:"places",C:"offers",D:"expresses"}, answer:"C" }
+    ]
+  }
+];
+
+/* keys for Section 3 (Reading) — inserted from the mapping you provided */
+const section3Key = [
+  // Passage1 Q1-10
+  "D","A","B","A","C","D","B","C","B","D",
+  // Passage2 Q11-20
+  "B","A","C","D","C","C","C","B","C","B",
+  // Passage3 Q21-30
+  "C","A","C","A","A","D","D","B","A","D",
+  // Passage4 Q31-40
+  "C","B","D","D","A","D","B","D","B","C"
+];
+
+/* ---------------------------
+  STATE + helper functions
+--------------------------- */
+const state = {
+  s1Responses: Array(section1.length).fill(null),
+  s2Responses: Array(section2.length).fill(null),
+  s2bResponses: Array(section2b.length).fill(null),
+  s3Responses: section3.map(p => Array(p.questions.length).fill(null)),
+  results: {}
+};
+
+let timers = {1: 20*60, 2: 20*60, 3: 45*60}; // default seconds
+let timerHandles = {1:null,2:null,3:null};
+
+function escapeHtml(str){ return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+/* ---------------------------
+  Rendering Section 1,2,2b,3
+--------------------------- */
+function renderSection1(){
+  const container = document.getElementById('questions1'); container.innerHTML='';
+  section1.forEach((item,i)=>{
+    const div = document.createElement('div'); div.className='question';
+    div.innerHTML = `<div class="q-title">Q${i+1}. ${escapeHtml(item.q)}</div>
+      <div class="options">${Object.keys(item.choices).map(letter=>`
+        <label>
+          <input type="radio" name="s1_q${i}" value="${letter}" ${state.s1Responses[i]===letter?'checked':''}/>
+          <strong>${letter}.</strong> ${escapeHtml(item.choices[letter])}
+        </label>`).join('')}</div>`;
+    container.appendChild(div);
+  });
+  updateCount(1);
+}
+
+function renderSection2(){
+  const container = document.getElementById('questions2'); container.innerHTML='';
+  section2.forEach((item,i)=>{
+    const div = document.createElement('div'); div.className='question';
+    div.innerHTML = `<div class="q-title">Q${i+1}. ${escapeHtml(item.text)}</div>
+      <div class="options">${item.choices.map((c, idx)=>`
+        <label>
+          <input type="radio" name="s2_q${i}" value="${['A','B','C','D'][idx]}" ${state.s2Responses[i]===['A','B','C','D'][idx]?'checked':''}/>
+          <strong>${['A','B','C','D'][idx]}.</strong> ${escapeHtml(c)}
+        </label>`).join('')}</div>`;
+    container.appendChild(div);
+  });
+  updateCount(2);
+}
+
+function renderSection2b(){
+  const container = document.getElementById('questions2b'); container.innerHTML='';
+  if(!section2b.length){ container.innerHTML='<div class="small-note">No Written Expression loaded — use admin panel or load sample.</div>'; document.getElementById('count2b').innerText = `Answered: 0 / 0`; return; }
+  state.s2bResponses = Array(section2b.length).fill(null);
+  section2b.forEach((item,i)=>{
+    const div = document.createElement('div'); div.className='question';
+    div.innerHTML = `<div class="q-title">Q${i+1}. ${escapeHtml(item.text)}</div>
+      <div class="options">${['A','B','C','D'].map(letter=>`
+        <label>
+          <input type="radio" name="s2b_q${i}" value="${letter}" />
+          <strong>${letter}.</strong> ${escapeHtml(item.parts[letter])}
+        </label>`).join('')}</div>`;
+    container.appendChild(div);
+  });
+  updateCount('2b');
+}
+
+function renderSection3(){
+  const container = document.getElementById('questions3'); container.innerHTML='';
+  let total=0;
+  section3.forEach((pass, pIndex)=>{
+    const wrap = document.createElement('div'); wrap.style.marginBottom='18px';
+    wrap.innerHTML = `<div style="font-weight:800;margin-bottom:8px">${escapeHtml(pass.title)}</div>
+      <div style="margin-bottom:10px">${escapeHtml(pass.passage)}</div>`;
+    pass.questions.forEach((q,qIndex)=>{
+      total++;
+      const qdiv = document.createElement('div'); qdiv.className='question';
+      qdiv.innerHTML = `<div class="q-title">Q${total}. ${escapeHtml(q.q)}</div>
+        <div class="options">${Object.keys(q.choices).map(letter=>`
+          <label>
+            <input type="radio" name="s3_${pIndex}_q${qIndex}" value="${letter}"/>
+            <strong>${letter}.</strong> ${escapeHtml(q.choices[letter])}
+          </label>`).join('')}</div>`;
+      wrap.appendChild(qdiv);
+    });
+    container.appendChild(wrap);
+  });
+  document.getElementById('count3').innerText = `Answered: 0 / ${total}`;
+  document.getElementById('p3').innerText = `0/${total}`;
+}
+
+/* ---------------------------
+  Utility: counts + live updates
+--------------------------- */
+function updateCount(section){
+  if(section===1){
+    let c=0; section1.forEach((_,i)=>{ if(document.querySelector(`input[name="s1_q${i}"]:checked`)) c++; });
+    document.getElementById('count1').innerText=`Answered: ${c} / ${section1.length}`;
+    document.getElementById('p1').innerText = `${c}/${section1.length}`;
+  } else if(section===2){
+    let c=0; section2.forEach((_,i)=>{ if(document.querySelector(`input[name="s2_q${i}"]:checked`)) c++; });
+    document.getElementById('count2').innerText=`Answered: ${c} / ${section2.length}`;
+    document.getElementById('p2').innerText = `${c}/${section2.length}`;
+  } else if(section==='2b'){
+    const total = section2b.length;
+    let c=0; section2b.forEach((_,i)=>{ if(document.querySelector(`input[name="s2b_q${i}"]:checked`)) c++; });
+    document.getElementById('count2b').innerText=`Answered: ${c} / ${total}`;
+    document.getElementById('p2b').innerText = total?`${c}/${total}`:'0/0';
+  } else if(section===3){
+    let total = 0, c=0;
+    section3.forEach((pass,pi)=>{ pass.questions.forEach((_,qi)=>{ total++; if(document.querySelector(`input[name="s3_${pi}_q${qi}"]:checked`)) c++; }) });
+    document.getElementById('count3').innerText=`Answered: ${c} / ${total}`;
+    document.getElementById('p3').innerText = `${c}/${total}`;
+  }
+}
+
+document.addEventListener('change', function(e){
+  if(e.target && e.target.matches('input[type="radio"]')){
+    updateCount(1); updateCount(2); updateCount('2b'); updateCount(3);
+  }
+});
+
+/* ---------------------------
+  Submissions & grading
+--------------------------- */
+function submitSection(s){
+  if(s===1){
+    let res=[], score=0;
+    section1.forEach((_,i)=>{ const sel = document.querySelector(`input[name="s1_q${i}"]:checked`); const v = sel?sel.value:null; res.push(v); if(v && v===section1Key[i]) score++; });
+    state.s1Responses=res; state.results.s1={score,total:section1.length};
+    document.getElementById('result1').innerHTML = `<div class="results"><div style="font-weight:700">Section 1 (Listening)</div><div>Your score: <strong>${score} / ${section1.length}</strong></div><div style="margin-top:8px"><button class="btn" onclick="showReview(1)">Show review</button> <button class="btn secondary" onclick="downloadSectionResult(1)">Download</button></div></div>`;
+    document.getElementById('p1').innerText = `${score}/${section1.length}`;
+  } else if(s===2){
+    let res=[], score=0;
+    section2.forEach((_,i)=>{ const sel=document.querySelector(`input[name="s2_q${i}"]:checked`); const v=sel?sel.value:null; res.push(v); if(v && v===section2Key[i]) score++; });
+    state.s2Responses=res; state.results.s2={score,total:section2.length};
+    document.getElementById('result2').innerHTML = `<div class="results"><div style="font-weight:700">Section 2 (Structure)</div><div>Your score: <strong>${score} / ${section2.length}</strong></div><div style="margin-top:8px"><button class="btn" onclick="showReview(2)">Show review</button> <button class="btn secondary" onclick="downloadSectionResult(2)">Download</button></div></div>`;
+    document.getElementById('p2').innerText = `${score}/${section2.length}`;
+  } else if(s==='2b'){
+    if(!section2b.length){ alert('No Written Expression loaded'); return; }
+    let res=[], score=0;
+    section2b.forEach((_,i)=>{ const sel=document.querySelector(`input[name="s2b_q${i}"]:checked`); const v=sel?sel.value:null; res.push(v); if(v && v===section2b[i].answer) score++; });
+    state.s2bResponses=res; state.results.s2b={score,total:section2b.length};
+    document.getElementById('result2b').innerHTML = `<div class="results"><div style="font-weight:700">Section 2b (Written Expression)</div><div>Your score: <strong>${score} / ${section2b.length}</strong></div><div style="margin-top:8px"><button class="btn" onclick="showReview('2b')">Show review</button> <button class="btn secondary" onclick="downloadSectionResult('2b')">Download</button></div></div>`;
+    document.getElementById('p2b').innerText = `${score}/${section2b.length}`;
+  } else if(s===3){
+    let total=0, score=0, flatIndex=0;
+    section3.forEach((pass,pi)=>{ pass.questions.forEach((q,qi)=>{ total++; const sel=document.querySelector(`input[name="s3_${pi}_q${qi}"]:checked`); const v=sel?sel.value:null; state.s3Responses[pi][qi]=v; if(v && v===section3Key[flatIndex]) score++; flatIndex++; }) });
+    state.results.s3={score,total};
+    document.getElementById('result3').innerHTML = `<div class="results"><div style="font-weight:700">Section 3 (Reading)</div><div>Your score: <strong>${score} / ${total}</strong></div><div style="margin-top:8px"><button class="btn" onclick="showReview(3)">Show review</button> <button class="btn secondary" onclick="downloadSectionResult(3)">Download</button></div></div>`;
+    document.getElementById('p3').innerText = `${score}/${total}`;
+  }
+}
+
+/* ---------------------------
+  Show review per section
+--------------------------- */
+function showReview(section){
+  let out='';
+  if(section===1){
+    out = `<div><h4>Listening review</h4></div>`;
+    section1.forEach((item,i)=>{ const your = state.s1Responses[i]||'<em>Not answered</em>'; const correct = section1Key[i]; out += `<div class="review-item"><div style="font-weight:700">Q${i+1}</div><div>Your: ${your}</div><div>Correct: ${correct} — ${escapeHtml(item.choices[correct])}</div></div>`; });
+    document.getElementById('result1').insertAdjacentHTML('beforeend', out);
+  } else if(section===2){
+    out = `<div><h4>Structure review</h4></div>`;
+    section2.forEach((item,i)=>{ const your = state.s2Responses[i]||'<em>Not answered</em>'; const correct = section2Key[i]; out += `<div class="review-item"><div style="font-weight:700">Q${i+1}</div><div>Your: ${your}</div><div>Correct: ${correct} — ${escapeHtml(item.choices[['A','B','C','D'].indexOf(correct)])}</div></div>`; });
+    document.getElementById('result2').insertAdjacentHTML('beforeend', out);
+  } else if(section==='2b'){
+    if(!section2b.length){ alert('No Written Expression loaded'); return; }
+    out = `<div><h4>Written Expression review</h4></div>`;
+    section2b.forEach((item,i)=>{ const your=state.s2bResponses[i]||'<em>Not answered</em>'; const correct=item.answer; out += `<div class="review-item"><div style="font-weight:700">Q${i+1}</div><div>Sentence: ${escapeHtml(item.text)}</div><div>Your: ${your}</div><div>Correct: ${correct} — ${escapeHtml(item.parts[correct])}</div></div>`; });
+    document.getElementById('result2b').insertAdjacentHTML('beforeend', out);
+  } else if(section===3){
+    let flatIndex=0;
+    out = `<div><h4>Reading review</h4></div>`;
+    section3.forEach((p,pi)=>{ p.questions.forEach((q,qi)=>{ const your=(state.s3Responses[pi] && state.s3Responses[pi][qi])||'<em>Not answered</em>'; const correct=section3Key[flatIndex]; out += `<div class="review-item"><div style="font-weight:700">${escapeHtml(p.title)} — Q${flatIndex+1}</div><div>Your: ${your}</div><div>Correct: ${correct} — ${escapeHtml(q.choices[correct])}</div></div>`; flatIndex++; }) });
+    document.getElementById('result3').insertAdjacentHTML('beforeend', out);
+  }
+}
+
+/* ---------------------------
+  Clear answers per section
+--------------------------- */
+function clearSectionAnswers(s){
+  if(!confirm('Clear selected answers for this section?')) return;
+  if(s===1){ section1.forEach((_,i)=>document.querySelectorAll(`input[name="s1_q${i}"]`).forEach(r=>r.checked=false)); state.s1Responses=Array(section1.length).fill(null); document.getElementById('result1').innerHTML=''; updateCount(1); }
+  if(s===2){ section2.forEach((_,i)=>document.querySelectorAll(`input[name="s2_q${i}"]`).forEach(r=>r.checked=false)); state.s2Responses=Array(section2.length).fill(null); document.getElementById('result2').innerHTML=''; updateCount(2); }
+  if(s==='2b'){ section2b.forEach((_,i)=>document.querySelectorAll(`input[name="s2b_q${i}"]`).forEach(r=>r.checked=false)); state.s2bResponses=Array(section2b.length).fill(null); document.getElementById('result2b').innerHTML=''; updateCount('2b'); }
+  if(s===3){ section3.forEach((p,pi)=>p.questions.forEach((_,qi)=>document.querySelectorAll(`input[name="s3_${pi}_q${qi}"]`).forEach(r=>r.checked=false))); state.s3Responses = section3.map(p=>Array(p.questions.length).fill(null)); document.getElementById('result3').innerHTML=''; updateCount(3); }
+}
+
+/* ---------------------------
+  Download results
+--------------------------- */
+function downloadSectionResult(s){
+  let payload={timestamp:new Date().toISOString()};
+  if(s===1){ payload.section='Listening'; payload.score=state.results.s1; payload.responses=state.s1Responses; payload.key=section1Key; }
+  if(s===2){ payload.section='Structure'; payload.score=state.results.s2; payload.responses=state.s2Responses; payload.key=section2Key; }
+  if(s==='2b'){ payload.section='Written Expression'; payload.score=state.results.s2b; payload.responses=state.s2bResponses; payload.key=section2b.map(x=>x.answer); }
+  if(s===3){ payload.section='Reading'; payload.score=state.results.s3; payload.responses=state.s3Responses; payload.key=section3Key; }
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `section_${s}_results.json`; a.click(); URL.revokeObjectURL(url);
+}
+function downloadAllResults(){ const payload={timestamp:new Date().toISOString(), results:state.results, s1:state.s1Responses, s2:state.s2Responses, s2b:state.s2bResponses, s3:state.s3Responses}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='toefl_all_results.json'; a.click(); URL.revokeObjectURL(url); }
+
+/* ---------------------------
+  Admin: Written Expression / Reading import
+--------------------------- */
+function importWritten(){
+  const txt = document.getElementById('weImport').value.trim();
+  if(!txt){ alert('Paste JSON or load sample.'); return; }
+  try{ const parsed = JSON.parse(txt); if(!Array.isArray(parsed)) throw new Error('Expected array'); parsed.forEach((it,idx)=>{ if(!it.text||!it.parts||!it.answer) throw new Error('Invalid format at index '+idx); }); section2b = parsed; renderSection2b(); alert('Imported Written Expression: '+section2b.length+' items'); }catch(e){ alert('Error: '+e.message); }
+}
+function loadSampleWE(){ const sample=[ { text:"The committee (A) have reached (B) a consensus (C) about the schedule (D).", parts:{A:"The committee",B:"have reached",C:"a consensus",D:"about the schedule"}, answer:"B" } ]; section2b=sample; renderSection2b(); document.getElementById('weImport').value=JSON.stringify(sample,null,2); }
+
+function importReading(){
+  const txt = document.getElementById('readingImport').value.trim();
+  if(!txt){ alert('Paste JSON or load sample.'); return; }
+  try{ const parsed = JSON.parse(txt); if(Array.isArray(parsed)) section3 = section3.concat(parsed); else section3.push(parsed); renderSection3(); alert('Imported reading content. Total passages: '+section3.length); }catch(e){ alert('Error parsing JSON: '+e.message); }
+}
+function loadSampleReading(){ const sample={title:"Sample", passage:"Sample passage", questions:[{q:"Sample Q", choices:{A:"a",B:"b",C:"c",D:"d"}, answer:"A"}]}; section3.push(sample); renderSection3(); document.getElementById('readingImport').value = JSON.stringify(sample,null,2); }
+
+/* ---------------------------
+  Tabs, timers & audio
+--------------------------- */
+function switchSection(s){
+  ['sec-1','sec-2','sec-2b','sec-3','sec-summary'].forEach(id=>document.getElementById(id).style.display='none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(s===1){ document.getElementById('sec-1').style.display='block'; document.querySelector('.tab[data-section="1"]').classList.add('active'); if(timers[1]>0) startTimer(1); }
+  else if(s===2){ document.getElementById('sec-2').style.display='block'; document.querySelector('.tab[data-section="2"]').classList.add('active'); if(timers[2]>0) startTimer(2); }
+  else if(s==='2b'){ document.getElementById('sec-2b').style.display='block'; document.querySelector('.tab[data-section="2b"]').classList.add('active'); if(timers[2]>0) startTimer(2); }
+  else if(s===3){ document.getElementById('sec-3').style.display='block'; document.querySelector('.tab[data-section="3"]').classList.add('active'); if(timers[3]>0) startTimer(3); }
+  else if(s==='summary'){ document.getElementById('sec-summary').style.display='block'; document.querySelector('.tab[data-section="summary"]').classList.add('active'); renderSummary(); }
+}
+
+function renderSummary(){ const el=document.getElementById('overallSummary'); const r=state.results; let html='<div class="panel">'; html+=`<div>Section 1 (Listening): ${r.s1? r.s1.score + '/' + r.s1.total : 'Not submitted'}</div>`; html+=`<div>Section 2 (Structure): ${r.s2? r.s2.score + '/' + r.s2.total : 'Not submitted'}</div>`; html+=`<div>Section 2b (WE): ${r.s2b? r.s2b.score + '/' + r.s2b.total : 'Not submitted'}</div>`; html+=`<div>Section 3 (Reading): ${r.s3? r.s3.score + '/' + r.s3.total : 'Not submitted'}</div>`; html += '<div style="margin-top:8px"><small class="small-note">Use Download buttons to export each section or Download All Results.</small></div>'; html += '</div>'; el.innerHTML = html; }
+
+/* Timers */
+function applyTimes(){ const m1=parseInt(document.getElementById('t1').value||0,10); const m2=parseInt(document.getElementById('t2').value||0,10); const m3=parseInt(document.getElementById('t3').value||0,10); timers[1]=m1*60; timers[2]=m2*60; timers[3]=m3*60; resetTimers(); alert('Times applied: S1 '+m1+'m, S2 '+m2+'m, S3 '+m3+'m'); }
+function startTimer(section){ if(timerHandles[section]) return; if(!timers[section] || timers[section]<=0) return; let remaining = timers[section]; const el = document.getElementById('timer'+section); el.innerText = formatTime(remaining); timerHandles[section]=setInterval(()=>{ remaining--; timers[section]=remaining; el.innerText = formatTime(remaining); if(remaining<=0){ clearInterval(timerHandles[section]); timerHandles[section]=null; alert('Section '+section+' time is up. Auto-submitting.'); submitSection(section); } },1000); }
+function resetTimers(){ Object.keys(timerHandles).forEach(k=>{ if(timerHandles[k]){ clearInterval(timerHandles[k]); timerHandles[k]=null; } }); document.getElementById('timer1').innerText = formatTime(timers[1]||0); }
+function formatTime(sec){ if(!sec||sec<0) sec=0; const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; }
+
+/* Audio controls */
+function playAudio(id){ const a=document.getElementById('audio'+id); if(!a) return; a.play(); }
+function pauseAudio(id){ const a=document.getElementById('audio'+id); if(!a) return; a.pause(); }
+
+/* Init */
+renderSection1(); renderSection2(); renderSection2b(); renderSection3();
+switchSection(1);
+
+</script>
+</body>
+</html>

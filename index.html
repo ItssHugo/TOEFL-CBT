@@ -3,12 +3,15 @@
 <head>
    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@1200&display=swap" rel="stylesheet">
 
-<header style="display:flex; flex-direction:column; align-items:center; padding:5px 10px;">
-  <img src="oregon.png" alt="Logo CBT" style="height:150px; margin-bottom:5px;">
-  <h1 class="header-title">
-    <span class="oregon-text">Oregon</span>
-    <span class="academy-text">Academy</span>
-  </h1>
+<header style="display:flex; flex-direction:column; align-items:center; padding:10px 20px;">
+  <div class="logo-text-container">
+    <img src="oregon.png" alt="Logo CBT" style="height:200px; margin-bottom:5px;">
+    <h1 class="header-title">
+      <span class="oregon-text">Oregon</span>
+      <span class="academy-text">Academy</span>
+    </h1>
+  </div>
+  <span class="tagline">Smart Steps Ahead</span>
 </header>
 
 <meta charset="utf-8"/>
@@ -17,19 +20,14 @@
 <style>
 
 /* Font dan styling dasar */
-.header-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 32px; /* lebih kecil supaya tidak terlalu tinggi */
-  font-weight: 800;
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  color: transparent;
-  text-align: center;
-  line-height: 1; /* rapatkan teks */
+.logo-text-container {
+  position: relative; /* untuk shining effect */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Gradient per kata */
+/* Gradient teks */
 .oregon-text {
   background: linear-gradient(135deg, #ff7f00, #ffa500);
   -webkit-background-clip: text;
@@ -40,11 +38,22 @@
   background: linear-gradient(135deg, #007bff, #00c0ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-left: 3  px;
+  margin-left: 3px;
 }
 
-/* Shining effect satu garis */
-.header-title::after {
+.header-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 45px;
+  font-weight: 800;
+  display: inline-block;
+  color: transparent;
+  line-height: 1; /* rapat ke logo */
+  text-align: center;
+  margin-bottom: 2px; /* rapat ke tagline */
+}
+
+/* Shining effect satu garis di parent */
+.logo-text-container::after {
   content: '';
   position: absolute;
   top: 0;
@@ -59,6 +68,15 @@
 @keyframes shine {
   0% { left: -50%; }
   100% { left: 150%; }
+}
+
+/* Tagline */
+.tagline {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  color: rgba(0,0,0,0.3);
+  margin-top: 2px; /* rapat ke teks utama */
+  text-transform: capitalize;
 }
 
 :root{
@@ -796,4 +814,3 @@ switchSection(1);
 </script>
 </body>
 </html>
-
